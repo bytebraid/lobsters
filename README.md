@@ -30,13 +30,13 @@
 
 # 🦞 What's all this then?
 
-Welcome Lobsters. The tank is web portal that delivers live audio streaming. Independently broadcast your content or restream any other media from a URL.
-The tank is fully contained and primed for self-hosting on cloud or VPS resource. Make your internet presence 24/7 and share the sounds you love.
+Welcome Lobsters. The tank is web portal that delivers live audio streaming via [HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming). Independently broadcast your personal content or restream any other media from a URL.
+The tank is fully contained and primed for self-hosting on cloud or low-cost VPS. Manifest your internet presence with 24/7 internet radio, share the sounds you love or stream live and direct to your audience.
 
-The magical Lobster Bisque web portal serves up your curated music, podcasts and playlists, and exposes an [IceCast](https://icecast.org/) endpoint
-should you wish to waylay your radio station with a live event or show. 
+The magical Lobster Bisque web portal serves up your curated music, podcasts and playlists. The container exposes an SSL-secured port for [IceCast](https://icecast.org/), so you can interrupt regular broadcasting with a live radio show!
+We like [Butt](https://danielnoethen.de/butt/) for streaming live audio to the Lobster Tank.
 
-Novel features provided from the Bisque Kitchen interface allow skipping over content, interrupting the stream with items from your custom catalogue and delivering text-to-speech shout outs over your very own airwaves.
+Novel features provided from the Bisque Kitchen interface allow skipping over content, interrupting the stream with anything from your configured catalogue and muxing text-to-speech shout outs over your airwaves.
 
 Powered by [LiquidSoap](http://www.liquidsoap.info/) and [nginx](https://nginx.org/) via [SWAG](https://hub.docker.com/r/linuxserver/swag)
   
@@ -186,6 +186,30 @@ Visit https://yourdomain.com:8443 (or whatever port you specified in the config)
 <p align="center">
 <img src="https://parallaxed.net/assets/lobsterui.png" width="500"/>
 </p>
+
+## 🔊 Listen
+
+Press ▶ on the embedded player to listen to your radio stream.
+
+## 🔑 Authenticate with Google
+You should have edited [templates/config.yaml](templates/config.yaml) and updated the allowed_emails (comma separated) to include yours.
+
+Sign in to the Tank using a Google account. If you don't have one create a new Google account (...you can re-use any non-Google email addr you have access to).
+
+## 🔊 Stream a live show
+
+Click GO LIVE to enable live streaming.  
+
+Configure your favourite IceCast client. We like [Butt](https://danielnoethen.de/butt/). You must [enable TLS in your streaming configuration](public/images/butt.png) to connect to the exposed host port.
+
+nginx listens on port 9015 (default) for incoming streams. Stream ingress is reverse proxied to the liquidsoap harbour via a unix socket. The socket expires after 3 hours but **You can click GO LIVE anytime to reset expiry by 3 more hours.**
+
+## 📀 Request a rewind
+
+Click BISQUE to browse available content. Content is defined in [media.csv](playlists/media.csv). Run [the csv2liquid.py script](playlists/csv2liquid.py) to regenerate your catalogue and playlists from an updated [media.csv](playlists/media.csv).
+
+Clicking a row will reveal details for the show. Click REQUEST A REWIND to interrupt regular broadcasting and immediately stream your selection.
+
 
 # 📝 License
 Licensed under the [MIT License](./LICENSE).
