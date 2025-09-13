@@ -3,7 +3,6 @@ import theme from "theme";
 import React from "react";
 import MarqueeText from "react-marquee-text";
 import ReactPlayer from 'react-player';
-// import ReactPlayer from 'react-player'
 import { Theme, Link, Section, Text, Structure, Box, Button, Icon, LinkBox } from "@quarkly/widgets";
 import { Helmet } from "react-helmet";
 import { GlobalQuarklyPageStyles } from "../global-page-styles";

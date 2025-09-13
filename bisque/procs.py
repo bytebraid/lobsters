@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+##### Unused
 ##### TODO update /run/gunicorn/pid || /run/liquidsoap/pid
 
 # Copyright (c) 2009, Giampaolo Rodola'. All rights reserved.
@@ -39,19 +39,20 @@ PID     User    Cmdline                            USS     PSS    Swap     RSS
 from __future__ import print_function
 from logs import get_logger
 from pprint import PrettyPrinter
-#pf = PrettyPrinter(indent=4).pformat
+
+# pf = PrettyPrinter(indent=4).pformat
 from pathlib2 import Path
 from syjson import SyJson
 import sys
 import time
 from IPython.lib.pretty import pretty
+
 logger_name = "procs.py"
 try:
-    logger_name = Path(__file__).name 
+    logger_name = Path(__file__).name
 except:
     pass
 logging = get_logger(LOG_NAME=logger_name)
-
 
 
 import sys
@@ -64,14 +65,14 @@ if not (psutil.LINUX or psutil.MACOS or psutil.WINDOWS):
 
 
 def convert_bytes(n):
-    symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    symbols = ("K", "M", "G", "T", "P", "E", "Z", "Y")
     prefix = {}
     for i, s in enumerate(symbols):
         prefix[s] = 1 << (i + 1) * 10
     for s in reversed(symbols):
         if n >= prefix[s]:
             value = float(n) / prefix[s]
-            return '%.1f%s' % (value, s)
+            return "%.1f%s" % (value, s)
     return "%sB" % n
 
 
@@ -119,25 +120,29 @@ def main():
             file=sys.stdout,
         )
 
-from io import StringIO 
+
+from io import StringIO
 import sys
+
 
 class Capturing(list):
     def __enter__(self):
         self._stdout = sys.stdout
         sys.stdout = self._stringio = StringIO()
         return self
+
     def __exit__(self, *args):
         self.extend(self._stringio.getvalue().splitlines())
-        del self._stringio    # free up some memory
+        del self._stringio  # free up some memory
         sys.stdout = self._stdout
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     with Capturing() as output:
         main()
 
-    logging.info(f'')
-    logging.info('processes -> \n'+'\n'.join(output))
+    logging.info(f"")
+    logging.info("processes -> \n" + "\n".join(output))
 
 
 #    sys.exit(main())

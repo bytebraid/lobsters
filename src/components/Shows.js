@@ -1,5 +1,4 @@
 import React from "react";
-//import { useState } from 'react';
 import { Text, Button } from "@quarkly/widgets";
 
 import BootstrapTable from "react-bootstrap-table-next";
@@ -27,7 +26,6 @@ function commentForm(cell, row) {
 const columns = [
   {
     dataField: "hash",
-    //text: "Show Hash",
     text: "",
     hidden: true,
     filter: textFilter({
@@ -43,7 +41,6 @@ const columns = [
   },
   {
     dataField: "show",
-    // text: "Show",
     text: "",
     style: { textWrapMode: "wrap", overflow: "hidden" },
     filter: textFilter({
@@ -172,42 +169,14 @@ function setIdem(button, data) {
     button.disabled = false;
     return;
   
-
-
-//    /*
-//    let convey = document.getElementById("message");
-//    let convey = document.getElementById("status");
-//    if (convey === null) {
-//      console.log("no message element")
-//      console.log(data)
-//    }
-//    if ('status' in data) {
-//
-//    }
-//    if ('message' in data) {
-//      convey.innerHTML = data["message"];
-//    }
-//    */
-
-      
-  
 }
   
 
-  
-// const 
-//
-// interface ShowState {
-//   data: [{}],
-//   isLoading: boolean
-// };
 
-//class Shows extends React.Component<{},ShowState> {
 class Shows extends React.Component {
 
   constructor(props) {
     super(props);
-    // const [shows, setShows] = useState(props.data);
     this.state = {
       gary: {},
       data: [],
@@ -226,7 +195,7 @@ class Shows extends React.Component {
         </small>
         <br/>
         <pre style={{ whiteSpace: "preserve" }}>{row.comment.replaceAll("\\n","\n")}</pre>
-            <button id={`${row.hash}`} onClick={this.handleQueue} class="queueButton">          
+            <button id={`${row.hash}`} onClick={this.handleQueue} className="queueButton">          
             REQUEST A REWIND
           </button>
       </div>  
@@ -257,7 +226,7 @@ class Shows extends React.Component {
                   .then(this.handleResponseJson);
               console.log(response);
               document.getElementById(button.target.id).innerHTML = "QUEUEING";
-              //document.getElementById(button.target.id).disabled = true
+              document.getElementById(button.target.id).disabled = true;
               
   }
 
@@ -302,14 +271,10 @@ class Shows extends React.Component {
   }
 
   fetchData = () => {
-    //this.setState({ isLoading: true })
-    //Set it to the amount of records you want per page
     const that = this;
     fetch(`/stream/dbase.json`)
         .then( response => {
 
-        // get json response here
-//        let data = response.json();
         let last = new Date();        
         this.setState({
           gary: {
@@ -323,11 +288,7 @@ class Shows extends React.Component {
       })
       .then((response) => response.json())
       .then(function(response) {
-        /*
-        if (that.state.data.length > 0) {
-          if this.state.data
-        }
-        */
+
         that.setState({
           gary: that.state.gary,
           data: response,
@@ -337,21 +298,10 @@ class Shows extends React.Component {
       .catch((err) => {
           console.log(err);
         })
-//        if(data.status === 200){
-         // Process data here
-//        }else{
-         // Rest of status codes (400,500,303), can be handled here appropriately
-//        }
+
       };
-    /*      
-      .then((data) => data.json())
-      .then((data) => {
-        this.setState({ gary: this.state.gary, data: data, isLoading: false });
-      });
-      */
-  
+
   componentDidMount() {
-    //this.setState({
     
     this.fetchData.bind(this);
     this.handleResponse.bind(this);
@@ -359,9 +309,7 @@ class Shows extends React.Component {
     this.handleQueue.bind(this);
     this.fetchData();
     setInterval(this.fetchData.bind(this), 60000);
-    
-    //isLoading: false
-    // })
+ 
   }
 
   handleShoutOut = (button) => {
@@ -428,62 +376,6 @@ class Shows extends React.Component {
   };
 
   render() {
-    //    const expandRow = {
-    //      renderer: row => (
-    //        <div>
-    //          <p>.....</p>
-    //          <p>You can render anything here, also you can add additional data on every row object</p>
-    //          <p>expandRow.renderer callback will pass the origin row object to you</p>
-    //        </div>
-    //      ),
-    //      showExpandColumn: true
-    //    };
-    // const { data, sizePerPage, page } = this.state;
-
-            /*
-        <button
-          className="queryButton"
-          onClick={this.handleGetSelectedData}
-        >
-          Get Current Selected Rows
-        </button>
-        <button
-          className="btn btn-default"
-          onClick={this.handleGetExpandedData}
-        >
-          Get Current Expanded Rows
-        </button>
-        <button className="btn btn-default" onClick={this.handleGetCurrentPage}>
-          Get Current Page
-        </button>
-        <button
-          className="btn btn-default"
-          onClick={this.handleGetCurrentSizePerPage}
-        >
-          Get Current Size Per Page
-        </button>
-        <button
-          className="btn btn-default"
-          onClick={this.handleGetCurrentSortColumn}
-        >
-          Get Current Sort Column
-        </button>
-        <button
-          className="btn btn-default"
-          onClick={this.handleGetCurrentSortOrder}
-        >
-          Get Current Sort Order
-        </button>
-        <button
-          className="btn btn-default"
-          onClick={this.handleGetCurrentFilter}
-        >
-          Get Current Filter Information
-        </button>
-
-                   selectRow={{ mode: "checkbox", clickToSelect: true }} 
-
-*/
 
       
     return (

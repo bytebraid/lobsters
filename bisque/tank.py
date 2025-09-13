@@ -12,13 +12,11 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 
-# from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 
 from pprint import PrettyPrinter
 from starlette.middleware.sessions import SessionMiddleware
 
-# from fastapi_etag import Etag, add_exception_handler
 
 import time
 import uvicorn
@@ -99,7 +97,6 @@ allowed = config("ALLOWED_EMAILS", cast=Csv())
 
 
 app = FastAPI()
-# add_exception_handler(app)
 app.add_middleware(
     SessionMiddleware,
     secret_key=CLIENT_ID,

@@ -1,13 +1,10 @@
 import React from 'react';
-//import useData from "components/useData";
 import Index from "pages/index";
-//import Page404 from "pages/page404";
 import Kitchen from "pages/kitchen";
 import './Tail.css';
 import './Config/styles.css';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
-//const {useEffect, useState } = React;
 const GlobalStyles = createGlobalStyle`
     body {
         margin: 0;
@@ -43,15 +40,8 @@ const GlobalStyles = createGlobalStyle`
 
 `;
 
-//let data = useData();
-// data["fuck"] = "you";
 
 const App = (props) => {
-//     const [data, setData] = useState(false);
-//     data["foo"]  = "fuck";
-//     useEffect( () => {
-//         console.log("Here we are cunt.");
-//     }, [setData]);
     return (
     <Router>
      <GlobalStyles />
@@ -64,16 +54,3 @@ const App = (props) => {
     )
 }
 export default App;
-
-// 
-// export default () => (
-// 
-//     <Router>
-//         <GlobalStyles />
-//             <Switch>            
-//             	   <Route exact path='/' component={Index}/>        			
-//                    <Route exact path='/index' component={Index}/>     
-//                 <Route component={Page404}/>
-//             </Switch>        
-//     </Router>
-// );

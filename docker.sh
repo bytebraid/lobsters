@@ -14,14 +14,18 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+which jinja2 
+if [[ $? -ne 0 ]]; then
+    echo "Please install jinja2 -> pip install jinja2-cli" 
+    exit 1
+fi
+
 echo "Did you edit config.yaml?"
 arg1="${1:-templates/config.yaml}"
 if grep -q "yourdomain" $arg1; then
     echo "Nope. Please pay attention to README.md."
     exit 1
 fi
-
-
 
 rm -rvf config
 mkdir -p config

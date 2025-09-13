@@ -1,4 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 liquidsoap-daemon
 docker-compose.yml
 .git
@@ -7,6 +8,8 @@ docker-compose.yml
 
 # dependencies
 /src/Config/config.json
+/config
+/src/auth/Login.tsx
 /node_modules
 /.pnp
 .pnp.js

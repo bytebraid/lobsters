@@ -1,19 +1,5 @@
 import React from 'react';
 import {Text} from "@quarkly/widgets";
-// import MarqueeText from "react-marquee-text";
-
-// import "MarqueeText/styles.css"
-
-// const wrapStyle : React.CSSProperties = {
-//   position: 'relative',
-//   paddingTop: "56.25%",
-// };
-// 
-// const rpStyle :  React.CSSProperties = {
-//   position: 'absolute',
-//   top: '0',
-//   left: '0',
-// };
 
 interface TestComponentProps {
    name: string;
@@ -54,9 +40,7 @@ async function fetchData() {
         const res = await fetch("/bisque/now");
         json = await res.json();
         json["lastFetch"] = new Date().toLocaleTimeString();
-                 // request again after a minute
         return true;
-        //return json["lastFetch"];
 
     } catch (error) {
         json = loadingJSON;

@@ -13,9 +13,7 @@ const colorValues = Object.keys(styleConfig);
 const { websocketHost } = config;
 
 const client = new W3CWebSocket(
-  `${websocketHost}` //,
-//  `https://beta.parallaxed.net/ws`,
-  // 'echo-protocol'
+  `${websocketHost}` 
 );
 
 type Props = {};
