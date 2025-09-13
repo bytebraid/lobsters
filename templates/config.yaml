@@ -5,7 +5,7 @@ server_name: yourdomain.com
 
 # The default port for the nginx edge server is 8443
 # Use 443 if you have the port available on the container host.
-https_port: 443
+https_port: 8443
 
 # Comma-separated emails of privileged users, addresses must be tied to a Google account
 allowed_emails: "foo@bar.com,bar@baz.com"
