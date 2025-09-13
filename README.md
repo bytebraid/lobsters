@@ -92,7 +92,7 @@ $ git clone https://github.com/bytebraid/lobsters.git
 ```bash
 # Run csv2liquid.py
 $ cd playlists
-$ ./csv2liquid.py -a Rankin # Omit the --alternative arg for a single playlist
+$ ./csv2liquid.py -a Rankin media.csv # Omit the --alternative arg for a single playlist
 $ ./finalize.sh
 ```
 
