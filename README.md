@@ -186,5 +186,6 @@ Visit https://yourdomain.com:8443 (or whatever port you specified in the config)
 <p align="center">
 <img src="https://parallaxed.net/assets/lobsterui.png" width="500"/>
 </p>
+
 # 📝 License
 Licensed under the [MIT License](./LICENSE).
