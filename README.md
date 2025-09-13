@@ -86,7 +86,7 @@ $ git clone https://github.com/bytebraid/lobsters.git
   - Customize limits and messages
 
 ### 🎶 Add your content (OPTIONAL)
-- Edit the default [media.csv]/(playlists/media.csv)
+- Edit the default [media.csv](playlists/media.csv)
 ```bash
 # Run csv2liquid.py
 $ cd playlists
