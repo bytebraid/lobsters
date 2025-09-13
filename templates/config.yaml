@@ -10,7 +10,8 @@ https_port: 8443
 # Comma-separated emails of privileged users, addresses must be tied to a Google account
 allowed_emails: "foo@bar.com,bar@baz.com"
 
-
+# Password to stream live
+icecast_password: simmeringchowder
 
 ####################### Google OAuth API config #####################################
 #         https://console.cloud.google.com/apis/credentials                         #

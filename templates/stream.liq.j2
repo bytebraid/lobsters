@@ -83,7 +83,7 @@ end
 
 allplay = playlist(mode="{{ playlist_mode }}", sourcelist)
 mainplay = playlist(mode="{{ playlist_mode }}", altlist)
-live = input.harbor("wesley", port=8080, password="showthrowers247")
+live = input.harbor("wesley", port=8080, password="{{ icecast_password }}")
 
 reqplay = playlist(mode="normal", on_reload=reload_flush, reload=1, loop=false, reload_mode="rounds", timeout=30., requestlist)
 reqplay.on_shutdown(shut_req)
