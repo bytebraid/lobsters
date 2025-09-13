@@ -1,3 +1,0 @@
-[submodule "liquidsoap-daemon"]
-	path = liquidsoap-daemon
-	url = https://github.com/savonet/liquidsoap-daemon
