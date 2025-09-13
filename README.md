@@ -210,6 +210,18 @@ Click BISQUE to browse available content. Content is defined in [media.csv](play
 
 Clicking a row will reveal details for the show. Click REQUEST A REWIND to interrupt regular broadcasting and immediately stream your selection.
 
+<p align="center">
+<img src="https://parallaxed.net/assets/lobsterbisque.png" width="500"/>
+</p>
+
+## 🎤 Send a Shout Out 
+
+Type a message and click SHOUT OUT. Your message will be rendered with [gtts](https://gtts.readthedocs.io/en/latest/cli.html) and played over whatever is currently streaming.
+
+- SHOUT OUT RULES
+  - Must be short, it's not an essay
+  - No spamming, wait until it's your turn.
+  - Don't repeat yourself. You can say the same message after 7 days.
 
 # 📝 License
 Licensed under the [MIT License](./LICENSE).
