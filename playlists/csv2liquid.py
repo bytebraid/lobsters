@@ -10,14 +10,20 @@ from urllib.parse import urlparse
 from contextlib import chdir
 import argparse
 
+alternate_m3u = "alternate.m3u"
+all_m3u = "all.m3u"
+hbase_json = "hbase.json"
+dbase_json = "dbase.json"
+playlists_dir = "/var/app/playlists"
+
 parser = argparse.ArgumentParser(
     prog="csv2liquid.py",
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    description="""Parse your CSV catalogue file into two .m3u playlists.\n
-- all.m3u
+    description=f"""Parse your CSV catalogue file into two .m3u playlists.\n
+- {all_m3u}
   Contains everything not filtered into alternative.m3u
 
-- alternate.m3u
+- {alternate_m3u}
   Contain only content filtered by artist matching the --alternative STRING
 
   Radio rotates between playlists by default.
@@ -114,8 +120,8 @@ with open(args.filename, "r") as thresh:
         print(f"DB created -> {dbase.name}")
         print(f"Hashes created -> {hbase.name}")
 
-        altout = f"'{target_dir}/alternate.m3u'"
-        allout = f"'{target_dir}/all.m3u'"
+        altout = f"'{target_dir}/{alternate_m3u}'"
+        allout = f"'{target_dir}/{all_m3u}'"
         if os.path.exists(finalize_sh):
             os.remove(finalize_sh)
         if os.path.exists(update_docker_sh):
@@ -123,15 +129,21 @@ with open(args.filename, "r") as thresh:
         with open(finalize_sh, "w") as f:
             print(
                 f"""#!/bin/bash
-### COPY + PASTE THESE COMMANDS AS NEEDED ###
+### CLEANUP TEMP AND REPLACE EXISTING FILES ###
 /bin/rm -vf {altout} {allout};
-cp -vf "{hbase.name}" "hbase.json";
-cp -vf "{dbase.name}" "dbase.json";
+cp -vf "{hbase.name}" "{hbase_json}"; chmod a+r {hbase_json};
+cp -vf "{dbase.name}" "{dbase_json}"; chmod a+r {dbase_json};
 
-# Remove the shuf pipe to preserve order
-
+# To preserve order you can
+# ./finalize.sh noshuf 
+#
 cat "{alternative.name}" | shuf > {altout};
-cat "{main.name}" | shuf > {allout}
+[[ -n $1 ]] && cat "{alternative.name}" > {altout}
+chmod a+r {altout}; echo "Created {altout}";
+cat "{main.name}" | shuf > {allout};
+[[ -n $1 ]] && cat "{main.name}" > {allout}
+chmod a+r {allout}; echo "Created {allout}";
+
 rm -vf *.tmp
     """,
                 file=f,
@@ -140,14 +152,14 @@ rm -vf *.tmp
         os.chmod(finalize_sh, 0o755)
         with open(update_docker_sh, "w") as f:
             print(
-                f"""#!/bin/bash
+                f"""#!/bin/bash -x
 ######### OPTIONAL #####################################
 ### UPDATE PLAYLISTS IN AN ALREADY RUNNING CONTAINER ###
 ###                                                  ###
-docker cp {altout} tank:/var/app/playlists/{altout}
-docker cp {allout} tank:/var/app/playlists/{allout}
-docker cp hbase.json tank:/var/app/playlists/hbase.json
-docker cp dbase.json tank:/var/app/playlists/dbase.json
+docker cp {altout} tank:{playlists_dir}/{alternate_m3u}
+docker cp {allout} tank:{playlists_dir}/{all_m3u}
+docker cp {hbase_json} tank:{playlists_dir}/{hbase_json}
+docker cp {dbase_json} tank:{playlists_dir}/{dbase_json}
     """,
                 file=f,
             )
