@@ -1,0 +1,14 @@
+#!/bin/bash 
+# This script must run from the repo root
+
+pwd
+SERVICE="{{ service_json }}"
+if [[ -s $SERVICE ]]
+then
+	cp -vf $SERVICE conf/service.json
+else
+	echo "No $SERVICE credentials present for Google OAuth2 service account."
+fi
+
+
+

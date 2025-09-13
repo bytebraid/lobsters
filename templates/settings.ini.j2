@@ -1,0 +1,51 @@
+# settings.ini
+ 
+
+
+[settings]
+
+### Port for running the tank.py service (with uvicorn/gunicorn)
+
+HOST={{ vars.hostname }}
+PORT={{ vars.port }}
+
+### Administrators
+
+ALLOWED_EMAILS={{ allowed_emails }}
+
+### Application files/folders
+
+LOBSTER_LOCAL_ROOT=/var/app/
+LOBSTER_STREAM_ROOT=/var/tmp/stream/
+LOBSTER_REQUESTS=%(LOBSTER_STREAM_ROOT)s/requests.m3u
+LOG_ROOT=/var/log/liquidsoap
+LOG_INFO=%(LOG_ROOT)s/liquid.log
+LOG_ERROR=%(LOG_ROOT)s/error.log
+
+### Google OAuth API config
+
+GOOGLE_APPLICATION_CREDENTIALS=%(LOBSTER_LOCAL_ROOT)s/conf/service.json
+GOOGLE_CLIENT_ID={{ google_client_id }}
+
+### Message when shoutout is duplicated
+
+OLD_WISDOM=No broken records, yeah? Say something fresh...
+
+### Pointer to an image with liquidsoap harbour credentials
+
+ENDPOINT={{ endpoint }}
+
+### Endpoints exposed by liquidsoap
+
+GET_SKIP_URL=http://localhost:{{ vars.liquidsoap_port }}/skip
+POST_SAY_URL=http://localhost:{{ vars.liquidsoap_port }}/say
+REQUEST_SIGNAL_URL=http://localhost:{{ vars.liquidsoap_port}}/req
+
+### Shoutouts allowed every SHOUT_WINDOW seconds, no more than SAY_WORD_LIMIT chars
+
+SHOUT_WINDOW={{ shout_window }}
+SAY_WORD_LIMIT={{ say_word_limit }}
+
+### Enable Debugging
+
+{{ debug }}

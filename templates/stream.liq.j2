@@ -1,0 +1,272 @@
+#!/usr/bin/liquidsoap
+print("Lobster Tank Bootstrap :: " ^ time.string("it is %H hours, %M minutes and %S seconds on %d/%m/%Y"))
+# set("init.daemon.pidfile.path", "/run/liquidsoap/pid")
+# set("init.daemon",true)
+root = "/var/app"
+logroot = "/var/log/liquidsoap"
+tmproot = "/var/tmp/stream"
+hlsroot = "#{tmproot}/hls"
+sourcelist = "#{root}/playlists/all.m3u"
+altlist = "#{root}/playlists/alternate.m3u"
+defaultlist = "#{root}/playlists/default.mp3"
+requestlist = "#{tmproot}/requests.m3u"
+file.mkdir(perms=493,tmproot)
+file.mkdir(perms=493,logroot)
+file.mkdir(perms=493,hlsroot)
+
+#TODO setuid script that deletes /tmp/stream and does other cleanup
+# not available in liquidsoap 2.1.3
+settings.protocol.gtts.path := "#{root}/bin/gtts-cli"
+settings.protocol.gtts.options := "-t com.au"
+settings.log.file.path.set("#{logroot}/liquid.log")
+settings.log.file.append.set(true)
+settings.log.level.set(3) 
+settings.init.force_start.set(true)
+settings.server.timeout.set(60.)
+settings.scheduler.fast_queues := 5
+settings.scheduler.non_blocking_queues := 3
+settings.scheduler.generic_queues := 5
+
+# Binds on 8080 for the input harbour, suggest you block the port and enable
+# see stream { } declaration in lobster/etc/etc-nginx-sites-available-yourdomain.nginx.conf
+# nginx ingress will terminate the TLS and socat will proxy the unix socket in /tmp and forward  
+# the incoming connection to liquidsoap on 8080
+set("harbor.bind_addrs",["127.0.0.1"])
+
+settings.encoder.metadata.export.set(["hash", "coveruri", "show", "artist", "inital_uri", "title_file", "title", "album", "genre", "date", "tracknumber","comment", "track", "year", "dj", "next", "on_air"])
+
+log.important("Log file declared as '#{log.file.path()}'")
+
+log.important("Alternative list declared: #{altlist}")
+log.important("Main list declared: #{sourcelist}")
+
+if file.exists(sourcelist) then
+	log.info("Main list verified")
+else
+	log.important("Main list NOT FOUND - WILL PLAY LOCAL OR FALLBACK")
+end
+
+def update_metadata(m) =
+  tit = string.escape(string(m["title"]))
+  uri = path.remove_extension(path.basename(string(m["initial_uri"])))
+  uri = string.escape(uri)  
+  if (string.length(tit) < 1) then
+    log.info("Title '#{tit}' too short - extracting from #{uri}")   
+    tit = uri
+  end 
+  [("title", tit),("title_file",uri)] 
+end
+
+server.telnet()
+queue = request.queue()
+sayq = request.queue()
+p = predicate.signal()
+rstop = predicate.signal()
+requp = ref(false)
+
+def shut_req()
+  log.important("###### Requests shutdown ######")
+  rstop.signal()
+end
+
+def stop_req()
+  file.remove(requestlist)
+  file.touch(perms=493,requestlist)
+  log.important("###### Request list was flushed ######")
+  () 
+end
+
+def reload_flush(s)
+  log.important("###### Request list has finished reloading #####")
+  p.signal()
+end
+
+allplay = playlist(mode="{{ playlist_mode }}", sourcelist)
+mainplay = playlist(mode="{{ playlist_mode }}", altlist)
+live = input.harbor("wesley", port=8080, password="showthrowers247")
+
+reqplay = playlist(mode="normal", on_reload=reload_flush, reload=1, loop=false, reload_mode="rounds", timeout=30., requestlist)
+reqplay.on_shutdown(shut_req)
+
+security = single(defaultlist)
+reqchange = predicate.changes({reqplay.is_ready()})
+ 
+thread.when(  
+  fast=true, reqchange, fun () -> begin 
+    if (reqplay.is_ready() == false) then
+      log.important("###### REQPLAY NOT READY ##### #{json.stringify(reqplay.remaining_files())}")       
+      requp := false
+      reload_flush(reqplay)
+      log.important("###### REQUP false #####")
+    else
+      requp := true
+      p.signal()     
+      log.important("###### READY CHANGE START #####")
+    end
+    ()
+  end
+)
+
+# TODO this "next to be played" information may be incorrect if an error is encountered
+# when liquidsoap finally fetches the file. 
+def log_n(aux) 
+  if list.length(aux) > 0 then
+    let [r, ...t] = aux   
+    m = request.metadata(r)      
+    file.write(append=false, data="#{metadata.json.stringify(m)}\n","#{tmproot}/next.json")
+  else
+    log.important("################### EMPTY QUEUE SENT TO log_n #############")
+  end
+end
+
+def fetch_queue(plist)
+  thread.run( fun () -> begin 
+    if (plist.fetch()) then
+      log.important("################ FETCH SUCCESS")
+    else
+      log.important("################ FETCH FAILED")
+    end
+    log_n(plist.queue())
+  end)
+end
+
+def log_meta(m)
+  fetch_queue(allplay)  
+end
+
+def log_req_meta(m)
+  file.write(append=false, data="#{metadata.json.stringify(m)}\n","#{tmproot}/meta.json")  
+end
+
+
+def log_all_meta(m)
+  fetch_queue(mainplay) 
+end
+
+
+mainplay.on_track(log_meta)
+allplay.on_track(log_all_meta)
+rotate = rotate(weights = [1, 1], [mainplay, allplay])
+
+radio = switch(track_sensitive=false, [({requp()}, reqplay),({true}, rotate)])
+radio.on_metadata(log_req_meta)
+radio = fallback(track_sensitive=false, [live, radio, security])
+radio = add(normalize=false,weights=[2.5, 1.], [sayq,radio])
+
+thread.when(
+  fast=false, rstop, fun () -> begin 
+    reqplay.set_queue([])
+    log.important("###### Request shutdown queue emptied ######")
+    ()
+  end
+)
+
+thread.when(
+  fast=true, p, fun () -> begin 
+      if (reqplay.fetch()) then
+        log.important("##### Signalled (fetch success) #####")
+      else
+        log.important("##### Signalled (fetch failed) #####")
+      end
+      stop_req()
+      ()
+    end
+  )
+
+
+def skipper(_)
+  radio.skip()
+  log.important("Skip was called")
+  http.response(data="The current song was skipped!") 
+end
+
+# Always firewall this port so it's only accessible from localhost
+harbor.http.register.simple(port=8015, "/skip", skipper)
+
+
+def m3u_req(_)
+  log.important("m3u was called")
+end
+
+def req(_)  
+  log.important("req was called")
+  # try to force the fetch
+  thread.run(fast=false,fun() -> begin 
+    log.important("##### Calling Requests Reload #####")    
+    reqplay.reload()
+    # p.signal()
+    sayq.push.uri("gtts:A rewind has been requested")
+    ()
+    end)  
+  http.response(data="#{json.stringify(file.lines(requestlist))}") 
+end
+
+# Always firewall this port so it's only accessible from localhost
+harbor.http.register.simple(port=8015, "/req", req)
+
+# Accepts sanitized text input posted from the tank
+def talk(request, response) 
+  log.important("talk was called")
+  try
+    let json.parse ({
+      words
+    } : {
+      words: string
+    }) = request.body()
+    try
+      sayq.push.uri("gtts:#{words}")
+      log.info("===== SPEAKING ===== #{words}")
+      response.status_code(202)
+      response.json({success=true, words="#{words}", message="OpenGary AI dispensing big sends"})
+    catch err do      
+      log.important("===== Naughty Language Will Not Be Tolerated =====  ")
+      response.status_code(418)
+      response.json({success=false, words="#{words}", message="Gary's Mic is Broken, try later"})      
+    end
+  catch err do    
+    response.status_code(400)    
+    response.json({success=false, error="#{json.stringify(err)}", message="OpenGary AI has refused your paperwork use words only on the form no grammar and no boat shoes yeah"})
+  end
+  ()
+end
+
+# Always firewall this port so it's only accessible from localhost
+harbor.http.register(port=8015, method="POST", "/say", talk)
+
+
+log.info("Initializing main stream")
+mp3_midfi = %ffmpeg(format="mpegts",
+                    %audio(
+                      codec="libmp3lame",
+                      channels=2,
+                      samplerate=44100,
+                      b="96k"
+                    )).{id3_version=4}
+mp3_hifi = %ffmpeg(format="mpegts",
+                    %audio(
+                      codec="libmp3lame",
+                      channels=2,
+                      samplerate=44100,
+                      b="160k"
+                    )).{id3_version=4}
+
+
+def wget_protocol(~rlog,~maxtime,arg) =
+
+  def log(~level, s) =
+    rlog(s)
+    log(label="protocol.wget", level=level, s)
+  end
+
+  cmd =
+    "#{root}/bin/wgetsh #{process.quote(arg)} $(output)"
+  log(
+    level=4,
+    "Executing #{cmd}"
+  )
+  [ process.uri(timeout=300, extname="mp3", cmd) ]
+end
+protocol.add("wget",wget_protocol)
+
+
+output.file.hls(hlsroot,[("mp3-low", mp3_midfi), ("mp3-hi", mp3_hifi)],radio)

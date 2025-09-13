@@ -1,0 +1,110 @@
+{% raw %}
+import React, {Component} from "react";
+import { GoogleLogin,GoogleOAuthProvider } from '@react-oauth/google';
+import { FaDiscord } from "react-icons/fa/index.js";
+import { Icon, LinkBox } from "@quarkly/widgets";
+
+
+
+class Login extends Component<any, any>{
+
+  callbacks: number;
+  message: string;
+
+  constructor(props) {
+    super(props);
+    this.callbacks = 0;
+  };
+
+  async doAuth(token) {
+      const response = await fetch("/bisque/auth", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            },
+            body: JSON.stringify({})
+        });
+
+      console.log(response.statusText);
+
+      this.message = response.statusText;
+      if (response.ok) { localStorage.setItem("token",token); this.props.isAuthed(); return true; }
+      else { console.log("Not Authorized"); localStorage.removeItem("token"); 
+        this.props.unAuth();
+      }
+      return false;
+
+  };
+
+  doAuthCallback(response) {
+      this.callbacks = this.callbacks+1;
+      if (Object.is(response,null)) {
+        console.log("Null Response Callback");
+        return;
+      }
+      const creds = response?.credential;
+      if (!creds) {
+        console.log("No credential in reponse");
+      }
+      if (this.callbacks <= 1 ) {         
+        const token = response["credential"];
+        this.doAuth(token);                
+      } else { console.log("Ignoring additional callbacks"); }      
+      
+  };
+  
+  render() {
+      var localToken =localStorage.getItem("token")
+      if (!Object.is(localToken,null)) {
+        this.doAuth(localToken)
+
+      }
+
+      if (this.callbacks < 1) {
+        return(
+          <div style={{ textAlign: "center", margin: "auto", position:"relative", top:"auto", left:"auto", right:"auto"}}>
+
+          <h1 style={{font: "20px var(--qtheme-fontFamily-googleSixtyfour)", color: "white"}}>OBTAIN THE NATTY GAINS</h1>   
+          <h2 style={{font: "13px var(--qtheme-fontFamily-googleSixtyfour)", color: "white"}}>Login for delicious Lobster Bisque</h2>
+          <div style={{ justifyContent: "center", margin: "auto", position:"relative", top:"0", display:"flex", border: "0"}}> 
+{% endraw %}
+          <GoogleOAuthProvider clientId="{{ google_client_id }}" >
+{% raw %}            
+          <GoogleLogin      
+            text="continue_with"
+            onSuccess={response => this.doAuthCallback(response)}
+            onError={() => { console.log("NO LOBSTER FOR YOU"); }}
+            theme="filled_black"
+            logo_alignment="center"
+            size="large"
+            shape="circle"
+            />
+            </GoogleOAuthProvider>
+            </div>
+            </div>
+          )
+      }
+      else {
+        return (
+           <div style={{ textAlign: "center", margin: "auto", position:"relative", top:"auto", left:"auto", right:"auto"}} >
+           <h1 style={{font: "18px var(--qtheme-fontFamily-googleAldrich)", color: "white"}}>Do you even lift, bro?</h1><br />
+          <LinkBox href="https://discord.gg/5BV8DsFWya" target="_blank">
+          <Icon
+            category="fa"
+            icon={FaDiscord}
+            size="125px"
+            hover-color="white"
+            transition="background-color 1s ease 0s"
+            />
+          </LinkBox>
+           <h3><a style={{font: "1em var(--qtheme-fontFamily-googleAldrich)", color: "white"}} href="https://discord.gg/5BV8DsFWya">Request access on Discord</a></h3> 
+           </div>
+        )
+      }
+
+  }
+}
+
+export default Login;
+{% endraw %}

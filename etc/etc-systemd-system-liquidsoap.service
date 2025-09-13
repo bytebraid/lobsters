@@ -1,0 +1,20 @@
+#
+# ln -s /etc/systemd/system/liquidsoap.service /etc/systemd/system/multi-user.target.wants/streamliquidsoap.service
+
+[Unit]
+Description=stream Liquidsoap daemon
+After=network.target
+Documentation=http://liquidsoap.fm/
+
+[Service]
+Type=forking
+User=liquidsoap
+Group=liquidsoap
+PIDFile=/run/liquidsoap/pid
+WorkingDirectory=/var/tmp/stream
+ExecStart=/usr/bin/liquidsoap /home/yourdomain.com/github/lobsters/local/stream.liq
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Alias=stream-liquidsoap.service

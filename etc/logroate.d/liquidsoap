@@ -1,0 +1,12 @@
+/var/log/liquidsoap/*.log {
+  compress
+  rotate 5
+  size 300k
+  missingok
+  notifempty
+  sharedscripts
+  su root liquidsoap
+  postrotate
+    kill -USR1 $(cat /run/liquidsoap/pid)
+  endscript
+}

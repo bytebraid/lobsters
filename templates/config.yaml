@@ -1,0 +1,66 @@
+########################################################################################
+# MANDATORY CONFIGURATION - YOU MUST CHANGE THESE VALUES BEFORE RUNNING ./docker.sh    #                                                                                     
+########################################################################################
+server_name: yourdomain.com
+
+# The default port for the nginx edge server is 8443
+# Use 443 if you have the port available on the container host.
+https_port: 443
+
+# Comma-separated emails of privileged users, addresses must be tied to a Google account
+allowed_emails: "foo@bar.com,bar@baz.com"
+
+
+
+####################### Google OAuth API config #####################################
+#         https://console.cloud.google.com/apis/credentials                         #
+# ^^^ MUST PROVIDE A google_client_id and configure permissions on the console  ^^^ #
+google_client_id: "123123123123-0m80oiasdjf0934th0fg0923rjiosd0f.apps.googleusercontent.com"
+
+### Go live information
+# Pointer to an accessible resource (put a file with details in public/images)
+endpoint: "images/image_with_live_stream_endpoint_details.png"
+
+
+########################################################################################
+# THAT'S ALL THE MANDATORY CONFIG DONE ! ALL CONFIGURATION BELOW THIS LINE IS OPTIONAL #                                                                                      
+########################################################################################
+###
+### Choose how liquidsoap queues items from the playlists
+playlist_mode: randomize # or "normal"
+
+# OPTIONAL enable debug logging
+debug: 
+# debug: DEBUG=True
+
+# OPTIONAL credentials for service accounts 
+service_json: "conf/service.json"
+
+### Text to Speech config
+# Rejection message for requesting a Shout Out that was identical to a previous one
+old_wisdom: "No broken records, yeah? Say something fresh..."
+
+# Shoutouts allowed every SHOUT_WINDOW seconds, no more than SAY_WORD_LIMIT chars
+shout_window: 60
+say_word_limit: 250
+
+###########################################################
+# DO NOT CHANGE these values without a substantial reason #
+###########################################################
+vars:
+  # Should always match the service name in docker-compose.yml
+  hostname: tank
+  # Local Uvicorn running the main FastAPI tank.py app
+  port: 10000
+  # Port for other Liquidsoap RPC
+  liquidsoap_port: 8015
+  # Port for IceCast / live feed ingress. Proxied by tank runnning socat after requested 
+  # via the Bisque web portal by authenticated users.
+  ingress_port: 9015
+  websocket_port: 8013
+
+### Endpoints exposed by liquidsoap
+# Insecure HTTP listens on localhost configured for liquidsoap harbours in stream.liq
+get_skip_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/skip"
+post_say_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/say"
+request_signal_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/req"

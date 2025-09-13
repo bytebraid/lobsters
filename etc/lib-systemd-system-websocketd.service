@@ -1,0 +1,21 @@
+[Unit]
+Description=Websocketd Service
+Documentation=man:sshd(8) man:sshd_config(5)
+After=network.target auditd.service
+ConditionPathExists=!/var/tmp/stream/no_websocket
+
+[Service]
+Type=simple
+ExecStart=websocketd --address=127.0.0.1 --port=8013 tail -n 100 -F /var/log/liquidsoap/liquid.log
+StandardOutput=append:/var/log/liquidsoap/liquid.log
+StandardError=append:/var/log/liquidsoap/liquid.log
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartPreventExitStatus=255
+WorkingDirectory=/tmp/
+User=liquidsoap
+Group=liquidsoap
+
+[Install]
+WantedBy=multi-user.target

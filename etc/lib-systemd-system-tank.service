@@ -1,0 +1,17 @@
+[Unit]
+Description=lobster tank.py gunicorn daemon
+After=network.target
+
+[Service]
+User=liquidsoap
+Group=liquidsoap
+WorkingDirectory=/home/yourdomain.com/github/lobsters/bisque
+ExecStart=/usr/bin/gunicorn tank:app --chdir /home/yourdomain.com/github/lobsters/bisque --workers 4 -k uvicorn.workers.UvicornWorker --bind 127.0.0.1:10000 --pid /run/gunicorn/pid
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+RemoveIPC=yes
+
+[Install]
+WantedBy=multi-user.target
+

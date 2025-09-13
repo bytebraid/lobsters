@@ -1,0 +1,78 @@
+#loading {
+    background-image: url(/images/bubble.svg);
+  background-size: contain;
+  background-repeat: space;
+    display: flex;
+  justify-content: flex-start;
+    background-color: #007cc5;
+}
+.sr-only {
+    display: none;
+}
+.react-bootstrap-table-pagination-list {
+  flex-flow: row-reverse;   
+  display: flex;
+}
+#reactBS {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+    font-size: 15px;
+    table-layout: fixed;
+    text-wrap: nowrap;
+}
+.colhead {
+    font-size: 18px;
+}
+.filter {
+    max-width: 150px;
+    font-size: 12px;
+}
+#reactBS-pageDropDown::after {
+    content: "Dubplates per page"
+}
+
+#saywords {
+    font: 20px var(--qtheme-fontFamily-googleSixtyfour);
+    background-color: darkslategray;
+    color: white;
+}
+#saywords::placeholder {
+    color: white;
+    font-size: 12px;
+    color: #DDDDDD;
+}
+
+.queueButton {
+
+  display: block;
+  background: orange;
+  color: white;
+  cursor: pointer;
+  overflow: visible;
+  outline: none;
+  user-select: none;
+  box-sizing: border-box;
+  border-radius: 60px;  
+  font: normal 550 42px/1 var(--qtheme-fontFamily-googleOswald);
+  pointer-events: auto;
+  margin: 20px 0px 20px 0px;
+  border: darkorange groove 4px;
+  padding: 20px;
+
+}
+.cookingButton {
+  display: block;
+  background: green;
+  color: white;
+  cursor: pointer;
+  overflow: visible;
+  outline: none;
+  user-select: none;
+  box-sizing: border-box;
+  border-radius: 60px;
+  font: normal 550 37px/1 var(--qtheme-fontFamily-googleOswald);
+  pointer-events: auto;
+  margin: 10px 0px;
+  border: 4px groove darkcyan;
+  padding: 20px;
+}

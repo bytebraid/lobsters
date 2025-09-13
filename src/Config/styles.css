@@ -1,0 +1,56 @@
+/* ----------------------------------------------
+ * You can place your styles for the log output in here
+ * ---------------------------------------------- */
+ #root { 
+  /* background-image: url(/images/bubble.svg);
+  background-size: cover;
+  background-repeat: inherit;
+*/
+}
+ @keyframes marqueeScroll {
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+ .marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+} 
+
+ .code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  font-size:12px;
+}
+#loglines {
+    width: 97%;
+    height: 97%;
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+	  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+    font-size:10px;
+    display: inline-grid;
+    place-self: center;
+}
+#logout {
+	  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  font-size:10px;
+}
+#endpoint {
+  display: grid;
+  min-height: 0px;  
+  max-width: 100%;
+}
+#endpoint a {
+  color: red;
+  background-color: yellow;
+}
+#endpoint a::hover {
+  color: green;
+  background-color: yellow;
+}

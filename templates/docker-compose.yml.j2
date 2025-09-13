@@ -1,0 +1,60 @@
+services:
+  lobster:
+    container_name: tank
+    build: 
+      dockerfile: ./Dockerfile
+    volumes:
+      - config:/config 
+      - var:/var/tmp
+      - app:/var/app
+      - tmp:/tmp
+      - init:/custom-cont-init.d
+
+    networks:
+      - lobster
+      
+  swag:
+    depends_on:
+      - lobster
+    image: lscr.io/linuxserver/swag:latest
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1301
+      - PGID=1301
+      - TZ=Etc/UTC
+      - URL={{ server_name }}
+      - VALIDATION=http
+#      - SUBDOMAINS=www, #optional
+#      - CERTPROVIDER= #optional
+#      - DNSPLUGIN=cloudflare #optional
+#      - PROPAGATION= #optional
+#      - EMAIL= #optional
+#      - ONLY_SUBDOMAINS=false #optional
+#      - EXTRA_DOMAINS= #optional
+      - STAGING=true #optional
+#      - DISABLE_F2B= #optional
+    volumes:
+      - config:/config
+      - var:/var/tmp
+      - app:/var/app
+      - init:/custom-cont-init.d:ro
+    ports:
+      - {{ https_port }}:443
+      - {{ vars.ingress_port }}:9015
+      - 80:80 # needed for TLS certificates from via automated ACME challenge for letsencrypt support
+    networks:
+      - lobster
+    restart: unless-stopped
+
+networks:
+  lobster:    
+
+volumes:
+  var:
+  app:
+  config:
+  init:
+  tmp:
+
