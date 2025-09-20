@@ -29,8 +29,8 @@ RUN cp -rvf /var/app/config / \
     && chmod a+rx /var/app/bin -R \
     && chmod a+rx /var/app/build -R \
     && chmod a+rx /var/app/bisque/*.py \
-    && groupadd -g 101 liquidsoap \
-    && useradd -u 100 -g liquidsoap liquidsoap -ms /bin/bash \
+    && groupadd -g 10001 liquidsoap \
+    && useradd -u 10000 -g liquidsoap liquidsoap -ms /bin/bash \
     && rm -vf /var/app/bin/bash \
     && /var/app/bin/activate \
     && /var/app/bin/pip install --no-cache-dir -r requirements.txt \
