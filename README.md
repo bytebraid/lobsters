@@ -84,6 +84,8 @@ $ git clone https://github.com/bytebraid/lobsters.git
   - Set privileged email accounts (for access to admin features)  
 
 - Optionally
+  - Provide your own TLS certificates
+    - Put cert.crt (fullchain.pem) and cert.key (privkey.pem) in [/templates/nginx/certs](templates/nginx/certs)
   - Set playlist_mode to your preference
   - Customize limits and messages
 
@@ -103,13 +105,19 @@ $ ./finalize.sh
 # +++ Build, compose and start the docker containers +++
 #
 $ ./docker.sh
+```
 
-# First time starting the containers? 
-# Wait a minute for SWAG ACME client to get your TLS certificates...
-# ...Then SWAG nginx might need to reload certificate configs, so run:
-$ docker compose restart # ONLY NEEDED ONCE, OR IF YOU docker system prune and rebuild new containers
+This script will build all the containers, retrofit some dependencies with docker commit, and then start the Lobster Tank service.
 
+#### 🛑 Possible issues
 
+**docker.sh will run a down/up cycle after a successful build** - beacuse reasons:
+- nginx may need a restart / SIGHUP if your TLS certificates are freshly generated
+- liquidsoap may complain about the "internal scheduler"
+
+*If you experience difficulties, stop and start the containers* ➡ **docker compose down** / **docker compose up**
+
+```bash
 #######################
 # ==== How TO ... === #
 
@@ -119,12 +127,13 @@ $ docker compose up
 # Shell into the containers  🦞
 $ docker exec --user root -it tank /bin/bash
 $ docker exec --user root -it swag /bin/bash
+$ docker exec --user root -it liquidsoap /bin/bash
 
 # Stop the Lobster Tank 🛑
 $ docker compose down
 
 # ^^^ To delete the containers, make sure they are down, and then
-$ docker system prune -a 
+$ docker system prune -a --volumes
 
 # Update the playlists and databases in the containers
 $ cd playlists
@@ -161,17 +170,17 @@ $ ./update-docker.sh
 - perhaps bang your head against the wall for taking the hard route and nothing is working
 - reflect on the choices that led you to read this
 
-### Option 1: It's not working
+### 🤦‍ Option 1: It's not working
 
 - Repent all your sins and follow the docker instructions.
 
-### Option 2: Seek help
+### 🆘 Option 2: Seek help
 
-#### Contact a therapist as you may require help for deeper issues that led you here
+#### 👩‍⚕️ Contact a therapist as you may require help for deeper issues that led you here
 
 - "Any man who goes to a psychiatrist ought to have his head examined"
 
-### Option 3: So far so good, and it seems to work? 
+### ✅ Option 3: So far so good, and it seems to work? 
 - congratulate yourself on being a prodigy
 - edit the boilerplate csv with data about your content. local media or web URLs can be referenced
 - if you provide web URLs, /var/tmp will swell
