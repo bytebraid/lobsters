@@ -5,7 +5,7 @@ docker-compose.yml
 .git
 *.ini
 *.pub
-
+/templates/nginx/certs/cert*
 # dependencies
 /src/Config/config.json
 /config

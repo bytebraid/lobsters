@@ -1,4 +1,12 @@
+LICENSE
+tsconfig.json
+Dockerfile
+.npmrc
+.gitignore
+src
 local
-build
 node_modules
 package-lock.json
+package.json
+templates
+etc

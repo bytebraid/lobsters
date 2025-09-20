@@ -26,12 +26,11 @@ settings.server.timeout.set(60.)
 settings.scheduler.fast_queues := 5
 settings.scheduler.non_blocking_queues := 3
 settings.scheduler.generic_queues := 5
-
 # Binds on 8080 for the input harbour, suggest you block the port and enable
 # see stream { } declaration in lobster/etc/etc-nginx-sites-available-yourdomain.nginx.conf
 # nginx ingress will terminate the TLS and socat will proxy the unix socket in /tmp and forward  
 # the incoming connection to liquidsoap on 8080
-set("harbor.bind_addrs",["127.0.0.1"])
+set("harbor.bind_addrs",["0.0.0.0"])
 
 settings.encoder.metadata.export.set(["hash", "coveruri", "show", "artist", "inital_uri", "title_file", "title", "album", "genre", "date", "tracknumber","comment", "track", "year", "dj", "next", "on_air"])
 

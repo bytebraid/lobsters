@@ -27,6 +27,22 @@ endpoint: "images/butt.png"
 # THAT'S ALL THE MANDATORY CONFIG DONE ! ALL CONFIGURATION BELOW THIS LINE IS OPTIONAL #                                                                                      
 ########################################################################################
 ###
+### SSL Certificate paths (default for swag)
+ssl_certificate: /config/keys/cert.crt
+ssl_certificate_key: /config/keys/cert.key
+
+### Own certificates? Place your custom certs in templates/nginx/certs/...
+
+### cert.pem 
+# ssl_certificate: /config/nginx/certs/cert.crt 
+
+### fullchain.pem
+# ssl_certificate_key: /config/nginx/certs/cert.key 
+
+
+### Make true to contact letsencrypt staging environment
+### You're allowed to request a production cert five times before you will be locked out for a week
+acme_staging: false
 ### Choose how liquidsoap queues items from the playlists
 playlist_mode: randomize # or "normal"
 
@@ -51,6 +67,7 @@ say_word_limit: 250
 vars:
   # Should always match the service name in docker-compose.yml
   hostname: tank
+  liquidsoap_hostname: liquidsoap 
   # Local Uvicorn running the main FastAPI tank.py app
   port: 10000
   # Port for other Liquidsoap RPC

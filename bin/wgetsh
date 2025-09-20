@@ -1,17 +1,14 @@
-#!/usr/bin/bash
+#!/bin/sh
+
+export PATH="/usr/bin:/bin:/var/app/bin"
 export LOG=/var/log/liquidsoap/liquid.log
 # Clean out old files
-BIN=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-(cd "$BIN" ; ./hygiene.sh)
+/var/app/bin/hygiene.sh
 
 [[ ! -n $1 ]] && echo "no parameter URI" && exit 1
 [[ ! -n $2 ]] && echo "no parameter output link" && exit 1
-cd /tmp
-set -x
-/usr/bin/wget --connect-timeout=10 --dns-timeout=10 --read-timeout=180 -N --no-if-modified-since --no-use-server-timestamps "$1"
+cd /var/tmp
+wget --connect-timeout=10 --dns-timeout=10 --read-timeout=180 -N --no-if-modified-since --no-use-server-timestamps "$1" 
 FILE=$(basename $1)
-[[ -O $FILE ]] && /usr/bin/ln -sf "$FILE" "$2"
-find /tmp/ -iname '*osb' -exec /bin/rm -vf {} \; | tee -a $LOG
-
-
-
+ln -sf "$FILE" "$2"
+exit 0

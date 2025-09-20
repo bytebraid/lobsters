@@ -7,22 +7,40 @@ services:
       - config:/config 
       - var:/var/tmp
       - app:/var/app
-      - tmp:/tmp
+      - log:/var/log/liquidsoap
       - init:/custom-cont-init.d
 
+    networks:
+      - lobster
+
+  liquidsoap:
+    depends_on:
+      - lobster 
+    container_name: liquidsoap
+    image: savonet/liquidsoap:v2.2.5    
+    environment:
+      - TMPDIR=/var/tmp/
+      - PATH=/var/app/bin:/usr/bin/:/bin
+    command:
+      - /var/app/bin/stream.liq
+    volumes:
+      - log:/var/log/liquidsoap
+      - var:/var/tmp
+      - app:/var/app
     networks:
       - lobster
       
   swag:
     depends_on:
       - lobster
+      - liquidsoap
     image: lscr.io/linuxserver/swag:latest
     container_name: swag
     cap_add:
       - NET_ADMIN
     environment:
-      - PUID=1301
-      - PGID=1301
+      - PUID=100
+      - PGID=101
       - TZ=Etc/UTC
       - URL={{ server_name }}
       - VALIDATION=http
@@ -33,7 +51,7 @@ services:
 #      - EMAIL= #optional
 #      - ONLY_SUBDOMAINS=false #optional
 #      - EXTRA_DOMAINS= #optional
-#      - STAGING=true #optional
+      - STAGING={{ acme_staging }} #optional
 #      - DISABLE_F2B= #optional
     volumes:
       - config:/config
@@ -55,6 +73,6 @@ volumes:
   var:
   app:
   config:
-  init:
-  tmp:
+  init:  
+  log:
 
