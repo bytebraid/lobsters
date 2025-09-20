@@ -70,8 +70,8 @@ sleep 30
 
 # Fine tune the image
 echo "Installing additional liquidsoap dependencies and committing changes to docker image..."
-docker exec --user root -it liquidsoap /bin/sh -c /var/app/bin/setup.sh
-docker commit liquidsoap savonet/liquidsoap-alpine:v2.2.5
+docker exec --user root -it liquidsoap /bin/bash -c /var/app/bin/setup.sh
+docker commit liquidsoap savonet/liquidsoap:v2.2.5
 
 echo "Restarting containers..."
 docker compose down

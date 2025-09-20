@@ -20,7 +20,7 @@ services:
     image: savonet/liquidsoap:v2.2.5    
     environment:
       - TMPDIR=/var/tmp/
-      - PATH=/var/app/bin:/usr/bin/:/bin
+      - PATH=/var/app/bin:/usr/bin:/bin:/sbin:/usr/sbin
     command:
       - /var/app/bin/stream.liq
     volumes:
