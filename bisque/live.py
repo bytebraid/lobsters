@@ -10,18 +10,21 @@ import os
 import fasteners
 import threading
 import asyncio
+from decouple import config
+from decouple import Csv
 
 WAIT_SECONDS = 30
 logger_name = "live.py"
 script_file = "live.py"
 socket_path = "/var/tmp/stream.socket"
+live_harbour_tcp = str(config("LIVE_HARBOUR_TCP", "liquidsoap:8080"))
 try:
     logger_name = Path(__file__).name
     script_file = os.path.abspath(__file__)
 except Exception:
     pass
 lockfile = f"/var/tmp/{logger_name}.lock"
-socat_cmd = f"/usr/bin/socat UNIX-LISTEN:{socket_path},fork,user=liquidsoap,group=liquidsoap,mode=777 TCP:localhost:8080"
+socat_cmd = f"/usr/bin/socat UNIX-LISTEN:{socket_path},fork,user=liquidsoap,group=liquidsoap,mode=777 TCP:{live_harbour_tcp}"
 socat = socat_cmd.split(" ")
 logging = get_logger(LOG_NAME=logger_name)
 logging.info("initializing live.py")

@@ -72,6 +72,8 @@ vars:
   port: 10000
   # Port for other Liquidsoap RPC
   liquidsoap_port: 8015
+  liquidsoap_harbour_port: 8080
+
   # Port for IceCast / live feed ingress. Proxied by tank runnning socat after requested 
   # via the Bisque web portal by authenticated users.
   ingress_port: 9015
