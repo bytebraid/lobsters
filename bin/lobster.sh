@@ -1,10 +1,10 @@
 #!/bin/bash
 set +e
 
-
 chmod a+rx /var/app/bin -R
 touch /var/log/liquidsoap/liquid.log /var/log/liquidsoap/error.log
 chmod a+rwx /var/log/liquidsoap -R
+rm -vf /var/tmp/gunicorn.pid
 /var/app/bin/activate
 cd /var/app/bisque
 touch /var/tmp/stream/meta.json

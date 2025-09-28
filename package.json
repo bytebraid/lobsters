@@ -53,7 +53,7 @@
     "scripts": {
         "start": "export PORT=8013; react-scripts start",
         "buildwin": "set CI=false && set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
-        "build": "CI=false && NODE_OPTIONS=--openssl-legacy-provider && react-scripts --openssl-legacy-provider build",
+        "build": "CI=false && NODE_OPTIONS='--openssl-legacy-provider --max_old_space_size=1000' && react-scripts --openssl-legacy-provider --max_old_space_size=1000 build",
         "build:ci": "cross-env CI=false npm run build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"

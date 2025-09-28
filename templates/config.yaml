@@ -32,13 +32,15 @@ ssl_certificate: /config/keys/cert.crt
 ssl_certificate_key: /config/keys/cert.key
 
 ### Own certificates? Place your custom certs in templates/nginx/certs/...
-
 ### cert.pem 
 # ssl_certificate: /config/nginx/certs/cert.crt 
-
 ### fullchain.pem
 # ssl_certificate_key: /config/nginx/certs/cert.key 
 
+# Let nginx manage it
+cors_origin: $allow_origin
+# OR set the cors origin manually
+# cors_origin: '*'
 
 ### Make true to contact letsencrypt staging environment
 ### You're allowed to request a production cert five times before you will be locked out for a week

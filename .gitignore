@@ -2,6 +2,9 @@
 
 liquidsoap-daemon
 docker-compose.yml
+config.sh
+configure.sh
+rebuild.sh
 .git
 *.ini
 *.pub
@@ -14,6 +17,7 @@ docker-compose.yml
 /.pnp
 .pnp.js
 /local
+/public/images/secret
 /conf/service.json
 
 # testing

@@ -9,7 +9,7 @@ services:
       - app:/var/app
       - log:/var/log/liquidsoap
       - init:/custom-cont-init.d
-
+    restart: unless-stopped
     networks:
       - lobster
 
@@ -29,6 +29,7 @@ services:
       - app:/var/app
     networks:
       - lobster
+    restart: unless-stopped
       
   swag:
     depends_on:

@@ -23,20 +23,19 @@ server {
     error_log /var/log/nginx/{{ server_name }}.error.log;
 
     # TODO Update your CORS headers as needed for better security
-    add_header 'Access-Control-Allow-Origin' $allow_origin always;
- #   add_header 'Access-Control-Allow-Origin' '*';
+    # the following is dynamic with the default $allow_origin setting
+    add_header 'Access-Control-Allow-Origin' '{{ cors_origin }}' always;
+
     add_header Vary Origin; 
 
     error_page 400 404 500 502 503 504 /error.html;
 
     location /error.html {
         root /var/app/build/;
-        add_header 'Access-Control-Allow-Origin' $allow_origin always;    
     }
 
     location ~ ^/stream/.*hls.* {
         root /var/tmp;
-        add_header 'Access-Control-Allow-Origin' $allow_origin always;
         add_header Vary Origin; 
     }
 
@@ -45,7 +44,6 @@ server {
 
          root /var/tmp;
          charset_types text/xml text/plain text/vnd.wap.wml application/javascript application/rss+xml application/json; 
-            add_header 'Access-Control-Allow-Origin' $allow_origin always;
             add_header 'Cache-Control' 'no-cache, no-store, must-revalidate';
             add_header 'Pragma' 'no-cache';
             add_header Strict-Transport-Security "max-age=63072000";
@@ -73,7 +71,6 @@ server {
 
     location /ws {
 
-        add_header 'Access-Control-Allow-Origin' $allow_origin;
         add_header Vary Origin; 
         add_header 'Pragma' 'no-cache';
         add_header Cache-Control 'no-cache, no-store, must-revalidate';
@@ -103,14 +100,10 @@ server {
     }
 
     # TODO Update your CORS headers as needed for better security
-    # add_header 'Access-Control-Allow-Origin' '*';
-    add_header 'Access-Control-Allow-Origin' $allow_origin always;
     add_header 'Access-Control-Allow-Credentials' 'true';
     add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS';
 
     location /bisque {
-        # add_header 'Access-Control-Allow-Origin' '*';
-        add_header 'Access-Control-Allow-Origin' $allow_origin always;
         add_header 'Access-Control-Allow-Credentials' 'true';
         add_header 'Access-Control-Allow-Headers' 'Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Content-Length';
         add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS';
