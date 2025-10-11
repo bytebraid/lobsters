@@ -216,7 +216,7 @@ async def auth(request: Request):
     if content is not None:
         response = JSONResponse(status_code=status.HTTP_200_OK, content=content)
         return response
-    return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"fuck": "off"})
+    return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"0121": "do one"})
 
 
 @app.get("/bisque/now")
