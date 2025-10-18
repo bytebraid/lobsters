@@ -73,7 +73,9 @@ GOOGLE_APPLICATION_CREDENTIALS = config(
 GET_SKIP_URL = str(config("GET_SKIP_URL", "http://127.0.0.1:8015/skip"))
 POST_SAY_URL = str(config("POST_SAY_URL", "http://127.0.0.1:8015/say"))
 REQUEST_SIGNAL_URL = str(config("REQUEST_SIGNAL_URL", "http://127.0.0.1:8015/req"))
-CLIENT_ID = config("GOOGLE_CLIENT_ID", "Provide GOOGLE_CLIENT_ID via bisque/settings.ini")
+CLIENT_ID = config(
+    "GOOGLE_CLIENT_ID", "Provide GOOGLE_CLIENT_ID via bisque/settings.ini"
+)
 LOBSTER_STREAM_ROOT = config("LOBSTER_STREAM_ROOT", default="/var/tmp/stream")
 LOBSTER_REQUESTS = config("LOBSTER_REQUESTS", default="/var/tmp/stream/requests.m3u")
 JSON_404 = jsonable_encoder({"success": False, "message": "Dubplate not found"})
@@ -108,24 +110,6 @@ app.add_middleware(
 pp = PrettyPrinter(indent=4)
 
 
-def decodeJWT(token: str):
-    try:
-        from google.oauth2 import id_token
-        from google.auth.transport import requests
-
-        request = requests.Request()
-        # target_audience = ""
-        logging.debug("Token %s", pretty(token))
-        decoded_token = id_token.verify_token(token, request)
-        logging.debug("We have decoded token %s", pretty(decoded_token))
-
-        return decoded_token if ((decoded_token["exp"] >= time.time())) else {}
-    except Exception:
-        # logging.exception("Error decoding token")
-        logging.info("Error decoding token - probably expired")
-        return {}
-
-
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
@@ -138,8 +122,10 @@ class JWTBearer(HTTPBearer):
             email = None
             if "email" in request.session:
                 email = request.session["email"]
-            if email is not None and len(email) > 0:
-                return HTTPAuthorizationCredentials(scheme="Bearer", credentials="spoof")
+            if email is not None and len(email) > 0 and email in allowed:
+                return HTTPAuthorizationCredentials(
+                    scheme="Bearer", credentials="spoof"
+                )
 
         except Exception:
             logging.exception("No session cookie present")
@@ -156,7 +142,9 @@ class JWTBearer(HTTPBearer):
                     detail="Invalid authentication scheme.",
                 )
             if not self.verify_jwt(credentials.credentials, request):
-                raise HTTPException(status_code=403, detail="Invalid token or expired token.")
+                raise HTTPException(
+                    status_code=403, detail="Invalid token or expired token."
+                )
             return credentials
         else:
             raise HTTPException(status_code=403, detail="Invalid authorization code.")
@@ -165,19 +153,25 @@ class JWTBearer(HTTPBearer):
 
     def verify_jwt(self, jwtoken: str, request: Request) -> bool:
         isTokenValid: bool = False
+        payload = dict()
         try:
             try:
                 # Specify the CLIENT_ID of the app that accesses the backend:
-
-                idinfo = id_token.verify_oauth2_token(jwtoken, requests.Request(), CLIENT_ID)
+                idinfo = id_token.verify_oauth2_token(
+                    jwtoken, requests.Request(), CLIENT_ID
+                )
                 logging.debug("idinfo data -> %s", pretty(idinfo))
-                # logging.debug("jwtoken data -> %s", pretty(jwtoken))
-
+                payload = idinfo
             except ValueError:
                 logging.exception("Error decoding token")
                 pass
 
-            payload = decodeJWT(jwtoken)
+            #            payload = decodeJWT(jwtoken)
+            if "exp" in payload:
+                if payload["exp"] < time.time():
+                    raise Exception("Token expired")
+            if "email" not in payload:
+                raise Exception("No email in decoded JWT")
             # logging.debug("payload data -> %s", pretty(payload))
             logging.debug(
                 "Email -> %s | Allowed emails -> %s"
@@ -201,7 +195,9 @@ class JWTBearer(HTTPBearer):
 @app.exception_handler(Exception)
 def validation_exception_handler(request: Request, exc):
     boo = "\n".join(str(i) for i in request.items())
-    logging.error("HTTP 500 Error -----> \n\n %s", pretty({"boo": boo, "request": request}))
+    logging.error(
+        "HTTP 500 Error -----> \n\n %s", pretty({"boo": boo, "request": request})
+    )
     logging.exception(str(exc))
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -216,7 +212,9 @@ async def auth(request: Request):
     if content is not None:
         response = JSONResponse(status_code=status.HTTP_200_OK, content=content)
         return response
-    return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"0121": "do one"})
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED, content={"0121": "do one"}
+    )
 
 
 @app.get("/bisque/now")
@@ -247,7 +245,9 @@ async def set_live_expiry(request: Request):
         return JSONResponse(status_code=status.HTTP_200_OK, content=response)
     except Exception:
         logging.exception("error starting live endpoint")
-    return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=JSON_GOODBYE)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=JSON_GOODBYE
+    )
 
 
 @app.get("/bisque/skip", dependencies=[Depends(JWTBearer())])
@@ -255,11 +255,15 @@ async def skip(request: Request):
     logging.debug("request -> %s", pretty(vars(request)))
     try:
         contents = urllib.request.urlopen(GET_SKIP_URL).read()
-        return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(contents))
+        return JSONResponse(
+            status_code=status.HTTP_200_OK, content=jsonable_encoder(contents)
+        )
     except Exception:
         logging.exception("Skip failed")
 
-    return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE)
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE
+    )
 
 
 @app.post("/bisque/say", dependencies=[Depends(JWTBearer())])
@@ -269,7 +273,9 @@ async def speak(request: Request):
     the POST it to the liquidsoap backend.
     """
     if "name" not in request.session:
-        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content=JSON_GOODBYE)
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED, content=JSON_GOODBYE
+        )
     logging.info("Flick thy wicked tongue")
     logging.debug("request -> %s", pretty(vars(request)))
     try:
@@ -414,7 +420,11 @@ async def queue(request: Request, hash):
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
                     content=jsonable_encoder(
-                        {"success": True, "message": f"Dubplate Ready [{hash}]", "body": r.json()}
+                        {
+                            "success": True,
+                            "message": f"Dubplate Ready [{hash}]",
+                            "body": r.json(),
+                        }
                     ),
                 )
             except Exception:
@@ -437,9 +447,13 @@ async def queue(request: Request, hash):
         )
     except Exception as e:
         logging.exception(e)
-        return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE)
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE
+        )
 
-    return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE)
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content=JSON_GOODBYE
+    )
 
 
 if __name__ == "__main__":
