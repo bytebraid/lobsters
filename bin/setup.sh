@@ -1,8 +1,6 @@
 #!/bin/bash
 #
-# Hack to get gtts into the liquidsoap image
-#
-
+# Hack to get gtts/wget into the liquidsoap image
 mkdir -p /usr/local/bin
 /usr/bin/apt-get update && /usr/bin/apt-get install -y --no-install-recommends python3 wget
 ln -sf /usr/bin/python3 /usr/local/bin/python3

@@ -1,17 +1,40 @@
-#!/bin/sh
+#!/bin/bash
 export LOG=/var/log/liquidsoap/liquid.log
 /bin/echo "Running Hygiene" | tee -a $LOG
 cd /var/tmp
-rm -vf liq.txt 
-/bin/echo "### Active linked files" > /var/tmp/liq.txt
-find . -type l -iname '*liq-pro*' -exec realpath {} >> liq.txt \; 
-cat liq.txt | tee -a $LOG
-/bin/echo -e "\n\n### Other files" >> /var/tmp/liq.txt
+rm -vf liq.txt
 
-# No more than 20 temp files/downloads. Remove oldest first. This script can be retired if storage is plenty.
-for file in `ls -lt /var/tmp | grep -v staticx | awk -e '$3 ~ /liquid/ { print "/var/tmp/"$9 }' | tee -a $LOG | tail -n +15`; 
-do 
-    if ! grep -q "$file" /var/tmp/liq.txt; then 
-        test -f "$file" && /bin/rm -vf "$file" | tee -a $LOG;
-    fi
-done
+cat << EOF > /var/tmp/liq.txt
+=== ignored files
+/var/tmp/live.py.lock
+/var/tmp/tank.py.lock
+/var/tmp/gunicorn.pid
+/var/tmp/liq.txt
+=== active linked files
+EOF
+
+find . -type l -iname '*liq-pro*' -exec realpath {} >> /var/tmp/liq.txt \;
+
+cat liq.txt | tee -a $LOG
+
+# No more than 13 temp files/downloads. Remove oldest first. This script can be retired if storage is plenty.
+mapfile -d '' files < <(
+    find /var/tmp -maxdepth 1 -type f -size +2M -printf '%T@ %p\0' \
+    | sort -zn \
+    | cut -z -d' ' -f2-
+)
+
+total=${#files[@]}
+
+if (( total > 13 )); then
+    remove_count=$(( total - 13 ))
+    echo "Total files: $total - removing $remove_count oldest files:" | tee -a $LOG
+    for (( i=0; i<remove_count; i++ )); do
+        file=${files[i]}
+        if ! grep -q "$file" /var/tmp/liq.txt; then
+            rm -vf -- "$file" | tee -a $LOG
+        fi
+    done
+else
+    echo "Only $total files found - nothing to remove." | tee -a $LOG
+fi
