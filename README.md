@@ -65,6 +65,7 @@ If you have [cygwin](https://cygwin.org/) + [python3](https://python.org) + [jin
 - ...with public DNS records i.e. **yourdomain.com** can be resolved by CNAME, A or AAAA records set for yourdomain.com
 - ...port 80 on the docker host machine must be free -> to conduct [letsencrypt](https://letsencrypt.org/) ACME challenges for domain ownership verification
 - ...and if you don't have a personal domain that's fine, [SWAG](https://hub.docker.com/r/linuxserver/swag) will self-sign a certificate. Your favourite web browsers will then manifest ballache upon you for all the reasons.
+- ...finally you must procure a [Google API key (client ID)](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#get_your_google_api_client_id) for OAuth login to the admin portal
 
 # ✨ Install
 
@@ -79,13 +80,14 @@ $ git clone https://github.com/bytebraid/lobsters.git
 
 - You must edit [templates/config.yaml](templates/config.yaml). Replace all mandatory values
   - Change https_port to 443 if it is free on your host
-  - Provide your public domain name, [Google API key (client ID)](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#get_your_google_api_client_id) for OAuth2
+  - Provide your public domain name, set your [Google API key (client ID)](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#get_your_google_api_client_id) for OAuth2
     - Specify https://yourdomain.com:8443 **NOTE the 8443 port** in your **Authorised JavaScript origins** and **Authorised redirect URIs** in your client ID configuration. You can only omit the port if you set https_port to 443.
   - Set privileged email accounts (for access to admin features)  
 
 - Optionally
   - Provide your own TLS certificates
     - Put cert.crt (fullchain.pem) and cert.key (privkey.pem) in [/templates/nginx/certs](templates/nginx/certs)
+    - update [templates/config.yaml](templates/config.yaml) and uncomment the custom **ssl_certificate** entries pointing to /config/nginx/certs/...
   - Set playlist_mode to your preference
   - Customize limits and messages
 
@@ -160,7 +162,7 @@ $ ./update-docker.sh
 - install python3 and all the [app dependencies](./requirements.txt)
 - examine [lobster.sh](bin/lobster.sh) for how to start services manually
 - gunicorn/uvicorn backend runs tank.py (FastAPI) on port 10000
-- liquidsoap must be version 2.2.4 [staticx binary provided](./bin/liquidsoap)
+- liquidsoap must [2.2.x >= 2.2.4](https://github.com/savonet/liquidsoap/releases/tag/rolling-release-v2.2.x)
 - go through the [the Dockerfile](./Dockerfile) and reproduce the layout
 - install npm and react-scripts, then `npm run build` in the repo root
 - unpack the app to /var/app and mkdir -p /var/tmp/stream/hls, creaete all the required directories like /var/log/liquidsoap

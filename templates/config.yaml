@@ -38,7 +38,7 @@ ssl_certificate_key: /config/keys/cert.key
 # ssl_certificate_key: /config/nginx/certs/cert.key 
 
 # Let nginx manage it
-cors_origin: $allow_origin
+cors_origin: "$allow_origin"
 # OR set the cors origin manually
 # cors_origin: '*'
 
@@ -83,6 +83,7 @@ vars:
 
 ### Endpoints exposed by liquidsoap
 # Insecure HTTP listens on localhost configured for liquidsoap harbours in stream.liq
-get_skip_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/skip"
-post_say_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/say"
-request_signal_url: "http://{{ vars.hostname }}:{{ vars.liquidsoap_port }}/req"
+get_skip_url: "http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port }}/skip"
+post_say_url: "http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port }}/say"
+request_signal_url: "http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port }}/req"
+live_harbour_tcp: "{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_harbour_port }}"

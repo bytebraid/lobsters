@@ -37,10 +37,10 @@ ENDPOINT={{ endpoint }}
 
 ### Endpoints exposed by liquidsoap
 
-GET_SKIP_URL=http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port }}/skip
-POST_SAY_URL=http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port }}/say
-REQUEST_SIGNAL_URL=http://{{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_port}}/req
-LIVE_HARBOUR_TCP={{ vars.liquidsoap_hostname }}:{{ vars.liquidsoap_harbour_port }}
+GET_SKIP_URL={{ get_skip_url }}
+POST_SAY_URL={{ post_say_url }}
+REQUEST_SIGNAL_URL={{ request_signal_url }}
+LIVE_HARBOUR_TCP={{ live_harbour_tcp }}
 
 ### Shoutouts allowed every SHOUT_WINDOW seconds, no more than SAY_WORD_LIMIT chars
 
